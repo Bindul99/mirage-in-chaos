@@ -272,16 +272,6 @@ footer { background:var(--off); border-top:1px solid var(--border); padding:60px
           <div class="card-excerpt">It was a normal day as usual. My thoughts were loud enough to hear. Deep loneliness, the wanting to achieve my goals. A song playing — "Just Wanna Be Yours." Strange peace and chaos inside me at once.</div>
           <span class="card-read">Read entry →</span>
         </div>
-        <div class="writing-card" onclick="openPost('midnight-library')">
-          <div class="card-tag">Books &nbsp;·&nbsp; My Take</div>
-          <div class="card-title">The Midnight Library — My View</div>
-          <div class="card-excerpt">Every unlived life is a door. My honest takes, what stayed with me, what I disagreed with.</div>
-        </div>
-        <div class="writing-card" onclick="openPost('atomic-habits')">
-          <div class="card-tag">Books &nbsp;·&nbsp; My Take</div>
-          <div class="card-title">Atomic Habits — What Actually Stuck</div>
-          <div class="card-excerpt">James Clear says you don't rise to the level of your goals. Here's what I tested on myself.</div>
-        </div>
       </div>
 
       <!-- Dynamic posts from admin -->
@@ -341,26 +331,14 @@ footer { background:var(--off); border-top:1px solid var(--border); padding:60px
       <p style="font-family:'Playfair Display',Georgia,serif;font-size:19px;font-style:italic;line-height:1.75;color:var(--body);margin-bottom:48px;max-width:640px;" class="reveal">
         It takes 66 days to form a habit. I'm testing it on myself. Every cycle I pick one thing to learn, practice, and write about. Follow along, suggest what comes next, or start your own 66.
       </p>
-      <div class="lang-grid reveal">
-        <div class="lang-card">
-          <div class="lang-char">中文</div>
-          <div class="lang-name">Mandarin Chinese</div>
-          <div class="lang-desc">Learning from living — weekly words, patterns and observations that textbooks never mention.</div>
-        </div>
-        <div class="lang-card">
-          <div class="lang-char" style="font-style:italic;">It</div>
-          <div class="lang-name">Italian</div>
-          <div class="lang-desc">A language that sounds like music. Learning to think in rhythm and beauty.</div>
-        </div>
-        <div class="lang-card">
-          <div class="lang-char">En</div>
-          <div class="lang-name">English</div>
-          <div class="lang-desc">Writing in the space between languages. Finding a voice that is entirely my own.</div>
-        </div>
+      <div class="coming-soon-box reveal">
+        <div class="coming-soon-icon">語</div>
+        <div class="coming-soon-label">Coming Soon</div>
+        <p class="coming-soon-desc">Mandarin, Italian and English — learning languages, sharing the journey. A space to explore and grow together.</p>
       </div>
 
       <!-- Dynamic language posts from admin -->
-      <div id="dynamic-language-posts" style="margin-bottom:40px;"></div>
+      <div id="dynamic-language-posts" style="margin-top:2px;"></div>
 
       <!-- Suggestion box — simple, no external dependency -->
       <div style="background:var(--blue-pale);border:1px solid var(--blue-light);padding:48px;" class="reveal">
@@ -400,6 +378,24 @@ footer { background:var(--off); border-top:1px solid var(--border); padding:60px
     <h1 class="post-reader-title" id="reader-title"></h1>
     <div class="post-reader-meta" id="reader-meta"></div>
     <div class="post-reader-body" id="reader-body"></div>
+
+    <!-- COMMENT SECTION -->
+    <div style="margin-top:80px; padding-top:48px; border-top:1px solid var(--border);">
+      <div style="font-family:'Playfair Display',Georgia,serif; font-size:24px; font-weight:500; color:var(--dark); margin-bottom:8px;">Thoughts & Responses</div>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:40px;">What did this make you think or feel?</div>
+
+      <!-- Comments list -->
+      <div id="post-comments-list" style="display:flex; flex-direction:column; gap:16px; margin-bottom:48px;"></div>
+
+      <!-- Comment form -->
+      <div style="background:var(--off); padding:40px; border:1px solid var(--border);">
+        <div style="display:flex; flex-direction:column; gap:12px; max-width:560px;">
+          <input type="text" id="comment-name" placeholder="Your name (optional)" style="padding:12px 16px; border:1px solid var(--border); background:var(--white); font-family:'IBM Plex Sans',sans-serif; font-size:15px; color:var(--dark); outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">
+          <textarea id="comment-body" rows="4" placeholder="Write your thought here..." style="padding:14px 16px; border:1px solid var(--border); background:var(--white); font-family:'Playfair Display',Georgia,serif; font-size:16px; line-height:1.7; color:var(--dark); outline:none; resize:vertical;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          <button onclick="submitComment()" style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; padding:14px 32px; border:1px solid var(--blue); color:var(--blue); background:transparent; cursor:pointer; width:fit-content; transition:all 0.2s;" onmouseover="this.style.background='var(--blue)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--blue)'">Post your thought →</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -496,21 +492,6 @@ const staticPosts = {
     <p>In that inside of the ocean I find myself struggling to survive and breathe — trying to adapt the fish skills so I survive. Yet waiting for somebody to pull me up. But this deep ocean silence made me realize: <strong>I have to swim to see the sunrise.</strong></p>
     <p>Strange peace and chaos inside me. The urge to write and put it in words. How weird to understand that we are aware that we come alone, leave alone — yet we try to be with someone or search a place where we can call home and belonging.</p>
     <blockquote>"Between life and death, there is a library." — Matt Haig, The Midnight Library</blockquote>`
-  },
-  'midnight-library': {
-    id: 'midnight-library',
-    title: 'The Midnight Library — My View',
-    category: 'Books · My Take',
-    date: '2025-05-02',
-    body: `<p>This post is coming soon. I haven't finished the book yet — but when I do, I'll write everything that stayed with me, what I disagreed with, and what it made me feel about my own unlived lives.</p>
-    <blockquote>"Between life and death, there is a library." — Matt Haig</blockquote>`
-  },
-  'atomic-habits': {
-    id: 'atomic-habits',
-    title: 'Atomic Habits — What Actually Stuck',
-    category: 'Books · My Take',
-    date: '2025-05-02',
-    body: `<p>James Clear says you don't rise to the level of your goals — you fall to the level of your systems. This post is coming soon. I'll write what I actually tested on myself, what worked, and what I think is missing from the book.</p>`
   }
 };
 
@@ -539,6 +520,7 @@ function openPost(id) {
   document.getElementById('reader-meta').textContent = formatDate(post.date);
   document.getElementById('reader-body').innerHTML = post.body;
   showView('post');
+  loadPostComments(id);
 }
 
 function formatDate(d) {
@@ -754,7 +736,43 @@ async function loadDynamicPosts() {
   postsCache = posts;
 }
 
-// ── SUGGESTIONS (localStorage for visitors) ──
+// ── POST COMMENTS ──
+let currentPostId = null;
+
+function loadPostComments(postId) {
+  currentPostId = postId;
+  const comments = JSON.parse(localStorage.getItem('mic-comments-' + postId) || '[]');
+  const el = document.getElementById('post-comments-list');
+  if (!el) return;
+  if (!comments.length) {
+    el.innerHTML = `<p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">No thoughts yet — be the first to respond.</p>`;
+    return;
+  }
+  el.innerHTML = comments.map(c => `
+    <div style="padding:24px 28px; background:var(--white); border:1px solid var(--border); border-left:2px solid var(--blue-light);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:baseline;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--steel);">${c.name}</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted);">${c.date}</span>
+      </div>
+      <p style="font-family:'Playfair Display',Georgia,serif; font-size:17px; line-height:1.75; color:var(--body);">${c.text}</p>
+    </div>`).join('');
+}
+
+function submitComment() {
+  const name = document.getElementById('comment-name').value.trim();
+  const text = document.getElementById('comment-body').value.trim();
+  if (!text || !currentPostId) return;
+  const comments = JSON.parse(localStorage.getItem('mic-comments-' + currentPostId) || '[]');
+  comments.unshift({
+    name: name || 'Anonymous',
+    text,
+    date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+  });
+  localStorage.setItem('mic-comments-' + currentPostId, JSON.stringify(comments));
+  document.getElementById('comment-name').value = '';
+  document.getElementById('comment-body').value = '';
+  loadPostComments(currentPostId);
+}
 function addSuggestion() {
   const name = document.getElementById('suggest-name').value.trim();
   const text = document.getElementById('suggest-text').value.trim();
