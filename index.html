@@ -594,14 +594,19 @@ function adminTab(tab, btn) {
   if (tab === 'posts') renderAdminPosts();
 }
 
-// ── POSTS API — talks to Netlify Blobs via function ──
-const API = '/api/posts';
+// ── POSTS API — JSONBin database ──
+const BIN_ID = '69f5f36136566621a818410d';
+const API_KEY = '$2a$10$2a3mIQX.1LFUPq3Lt9KgQ.yhtm0vQpp4ITezst/0.HtBnK0UGgF3m';
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 let postsCache = [];
 
 async function fetchPosts() {
   try {
-    const res = await fetch(API);
-    postsCache = await res.json();
+    const res = await fetch(BIN_URL + '/latest', {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const data = await res.json();
+    postsCache = data.record.posts || [];
     return postsCache;
   } catch(e) {
     console.error('Failed to fetch posts', e);
@@ -610,18 +615,24 @@ async function fetchPosts() {
 }
 
 async function savePost(post) {
-  await fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(post)
+  const posts = await fetchPosts();
+  const existing = posts.findIndex(p => p.id === post.id);
+  if (existing > -1) posts[existing] = post;
+  else posts.unshift(post);
+  await fetch(BIN_URL, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+    body: JSON.stringify({ posts })
   });
 }
 
 async function removePost(id) {
-  await fetch(API, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+  const posts = await fetchPosts();
+  const updated = posts.filter(p => p.id !== id);
+  await fetch(BIN_URL, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+    body: JSON.stringify({ posts: updated })
   });
 }
 
