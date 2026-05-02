@@ -82,8 +82,8 @@ nav {
 .card-tag { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--steel); margin-bottom:16px; }
 .card-title { font-family:'Playfair Display',Georgia,serif; font-size:22px; font-weight:500; font-style:italic; line-height:1.3; color:var(--dark); margin-bottom:14px; }
 .writing-card.featured .card-title { font-size:30px; }
-.card-excerpt { font-size:15px; color:var(--muted); line-height:1.8; }
-.writing-card.featured .card-excerpt { font-size:17px; color:var(--body); }
+.card-excerpt { font-size:15px; color:var(--muted); line-height:1.8; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+.writing-card.featured .card-excerpt { font-size:17px; color:var(--body); -webkit-line-clamp:5; }
 .card-read { display:inline-flex; align-items:center; gap:8px; margin-top:24px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--steel); text-decoration:none; transition:color 0.2s; }
 .card-read:hover { color:var(--blue); }
 
@@ -336,7 +336,7 @@ footer { background:var(--off); border-top:1px solid var(--border); padding:60px
     <div class="section-wrap">
       <div class="section-header reveal">
         <span class="section-num">04</span>
-        <h2 class="section-title">66 Days — <em>A Space to Learn Together</em></h2>
+        <h2 class="section-title">Language — <em>Learning Together</em></h2>
       </div>
       <p style="font-family:'Playfair Display',Georgia,serif;font-size:19px;font-style:italic;line-height:1.75;color:var(--body);margin-bottom:48px;max-width:640px;" class="reveal">
         It takes 66 days to form a habit. I'm testing it on myself. Every cycle I pick one thing to learn, practice, and write about. Follow along, suggest what comes next, or start your own 66.
@@ -358,6 +358,9 @@ footer { background:var(--off); border-top:1px solid var(--border); padding:60px
           <div class="lang-desc">Writing in the space between languages. Finding a voice that is entirely my own.</div>
         </div>
       </div>
+
+      <!-- Dynamic language posts from admin -->
+      <div id="dynamic-language-posts" style="margin-bottom:40px;"></div>
 
       <!-- Giscus comments -->
       <div style="background:var(--blue-pale);border:1px solid var(--blue-light);padding:48px;" class="reveal">
@@ -701,17 +704,42 @@ function deletePost(id) {
 }
 
 // ── LOAD DYNAMIC POSTS ON MAIN PAGE ──
+const LANGUAGE_CATEGORIES = ['Language', '66 Days'];
+
 function loadDynamicPosts() {
   const posts = getPosts();
-  const container = document.getElementById('dynamic-posts');
-  if (!posts.length) { container.innerHTML = ''; return; }
-  container.innerHTML = posts.map(p => `
-    <div class="dynamic-card" onclick="openPost('${p.id}')">
-      <div class="card-tag">${p.category}</div>
-      <div class="card-title" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;font-style:italic;color:var(--dark);margin-bottom:12px;">${p.title}</div>
-      <div class="card-excerpt" style="font-size:15px;color:var(--muted);line-height:1.75;">${p.body.replace(/<[^>]+>/g,'').substring(0,140)}...</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-top:16px;">Read →</div>
-    </div>`).join('');
+  
+  // Writing posts — everything except Language/66 Days
+  const writingPosts = posts.filter(p => !LANGUAGE_CATEGORIES.includes(p.category));
+  const writingContainer = document.getElementById('dynamic-posts');
+  if (!writingPosts.length) {
+    writingContainer.innerHTML = '';
+  } else {
+    writingContainer.innerHTML = writingPosts.map(p => `
+      <div class="dynamic-card" onclick="openPost('${p.id}')">
+        <div class="card-tag">${p.category}</div>
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;font-style:italic;color:var(--dark);margin-bottom:12px;line-height:1.3;">${p.title}</div>
+        <div style="font-size:15px;color:var(--muted);line-height:1.8;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;">${p.body.replace(/<[^>]+>/g,'').substring(0,200)}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-top:16px;">Read →</div>
+      </div>`).join('');
+  }
+
+  // Language posts — only Language/66 Days category
+  const langPosts = posts.filter(p => LANGUAGE_CATEGORIES.includes(p.category));
+  const langContainer = document.getElementById('dynamic-language-posts');
+  if (!langContainer) return;
+  if (!langPosts.length) {
+    langContainer.innerHTML = '';
+  } else {
+    langContainer.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);">` +
+      langPosts.map(p => `
+        <div class="dynamic-card" onclick="openPost('${p.id}')" style="background:var(--white);">
+          <div class="card-tag">${p.category} &nbsp;·&nbsp; ${formatDate(p.date)}</div>
+          <div style="font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:500;font-style:italic;color:var(--dark);margin-bottom:12px;">${p.title}</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${p.body.replace(/<[^>]+>/g,'').substring(0,160)}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-top:16px;">Read →</div>
+        </div>`).join('') + `</div>`;
+  }
 }
 
 // ── SCROLL REVEAL ──
