@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirage in Chaos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@300;400&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+<!-- Rich Text Editor -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --white: #ffffff;
+  --off: #f7f8fa;
+  --border: #e2e6ee;
+  --muted: #8892a4;
+  --body: #191919;
+  --dark: #111827;
+  --blue: #2d4a7a;
+  --blue-mid: #3d5f96;
+  --blue-light: #dce5f4;
+  --blue-pale: #f0f4fb;
+  --steel: #5b7499;
+  --red: #dc2626;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--white); color: var(--body); font-family: 'IBM Plex Sans', sans-serif; font-weight: 400; }
+
+/* ════════════════════════════════════
+   VIEWS — only one visible at a time
+════════════════════════════════════ */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ════════════════════════════════════
+   NAV
+════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 60px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-family: 'Playfair Display',Georgia,serif; font-size:17px; font-style:italic; color:var(--dark); cursor:pointer; text-decoration:none; }
+.nav-links { display:flex; gap:40px; list-style:none; }
+.nav-links a { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; cursor:pointer; }
+.nav-links a:hover { color:var(--blue); }
+
+/* ════════════════════════════════════
+   MAIN PAGE
+════════════════════════════════════ */
+/* HERO */
+.hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; padding-top:60px; }
+.hero-left { padding:100px 60px 80px; display:flex; flex-direction:column; justify-content:center; border-right:1px solid var(--border); }
+.hero-name { font-family:'Playfair Display',Georgia,serif; font-size:clamp(48px,6vw,80px); font-weight:500; line-height:1.05; color:var(--dark); letter-spacing:-0.02em; margin-bottom:32px; }
+.hero-name em { font-style:italic; color:var(--blue); }
+.hero-desc { font-size:20px; line-height:1.7; color:var(--body); max-width:440px; border-left:2px solid var(--blue-light); padding-left:24px; font-weight:400; }
+.hero-who { display:block; margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.15em; color:var(--steel); text-transform:uppercase; }
+.hero-right { background:var(--white); padding:100px 60px 80px; display:flex; flex-direction:column; justify-content:center; border-left:1px solid var(--border); }
+.hero-ocean-label { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--steel); margin-bottom:24px; }
+.hero-ocean-text { font-size:19px; line-height:1.85; color:var(--body); font-family:'Playfair Display',Georgia,serif; font-weight:400; }
+.hero-ocean-quote { font-family:'Playfair Display',Georgia,serif; font-size:20px; color:var(--dark); margin-top:36px; line-height:1.6; font-style:italic; font-weight:500; }
+.hero-quote-source { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--steel); margin-top:12px; }
+
+/* SECTIONS */
+.section-wrap { padding:100px 60px; }
+.section-header { display:flex; align-items:baseline; gap:20px; margin-bottom:64px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+.section-num { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--muted); }
+.section-title { font-family:'Playfair Display',Georgia,serif; font-size:clamp(26px,3.5vw,42px); font-weight:500; color:var(--dark); letter-spacing:-0.01em; }
+.section-title em { font-style:italic; color:var(--blue); }
+
+/* WRITING GRID */
+.writing-grid { display:grid; grid-template-columns:2fr 1fr; grid-template-rows:auto auto; gap:1px; background:var(--border); border:1px solid var(--border); }
+.writing-card { background:var(--white); padding:40px; transition:background 0.25s; cursor:pointer; }
+.writing-card:hover { background:var(--blue-pale); }
+.writing-card.featured { grid-row:1/3; background:var(--blue-pale); padding:52px; border-left:3px solid var(--blue); }
+.writing-card.featured:hover { background:#e6edf8; }
+.card-tag { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--steel); margin-bottom:16px; }
+.card-title { font-family:'Playfair Display',Georgia,serif; font-size:22px; font-weight:500; font-style:italic; line-height:1.3; color:var(--dark); margin-bottom:14px; }
+.writing-card.featured .card-title { font-size:30px; }
+.card-excerpt { font-size:15px; color:var(--muted); line-height:1.8; }
+.writing-card.featured .card-excerpt { font-size:17px; color:var(--body); }
+.card-read { display:inline-flex; align-items:center; gap:8px; margin-top:24px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--steel); text-decoration:none; transition:color 0.2s; }
+.card-read:hover { color:var(--blue); }
+
+/* Dynamic posts grid */
+#dynamic-posts { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); margin-top:2px; }
+.dynamic-card { background:var(--white); padding:40px; cursor:pointer; transition:background 0.2s; }
+.dynamic-card:hover { background:var(--blue-pale); }
+
+/* Tags */
+.tags-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:40px; }
+.tag { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:6px 16px; border:1px solid var(--border); color:var(--muted); cursor:default; transition:all 0.2s; border-radius:2px; }
+.tag:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-pale); }
+
+/* COMING SOON */
+.coming-soon-box { border:1px dashed var(--border); background:var(--off); padding:80px 60px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; }
+.coming-soon-icon { font-family:'Playfair Display',Georgia,serif; font-size:40px; font-style:italic; color:var(--blue-light); }
+.coming-soon-label { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); }
+.coming-soon-desc { font-size:15px; color:var(--muted); max-width:400px; line-height:1.7; font-style:italic; font-family:'Playfair Display',Georgia,serif; }
+
+/* LANGUAGE */
+.lang-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:40px; }
+.lang-card { background:var(--white); padding:36px 32px; transition:background 0.2s; }
+.lang-card:hover { background:var(--blue-pale); }
+.lang-char { font-family:'Playfair Display',Georgia,serif; font-size:44px; color:var(--blue-light); margin-bottom:14px; line-height:1; }
+.lang-name { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.lang-desc { font-size:14px; color:var(--muted); line-height:1.75; }
+
+/* FOOTER */
+footer { background:var(--off); border-top:1px solid var(--border); padding:60px; display:flex; justify-content:space-between; align-items:flex-end; }
+.footer-brand { font-family:'Playfair Display',Georgia,serif; font-size:22px; font-style:italic; color:var(--dark); margin-bottom:6px; }
+.footer-by { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); }
+.footer-right { text-align:right; }
+.footer-right p { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--muted); line-height:2; }
+.footer-who { font-family:'Playfair Display',Georgia,serif; font-size:15px; font-style:italic; color:var(--steel); margin-top:8px; display:block; }
+
+/* ════════════════════════════════════
+   POST READER VIEW
+════════════════════════════════════ */
+#post-view { padding-top:60px; min-height:100vh; }
+.post-reader { max-width:720px; margin:0 auto; padding:80px 40px; }
+.post-back { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; gap:8px; margin-bottom:48px; transition:color 0.2s; background:none; border:none; }
+.post-back:hover { color:var(--blue); }
+.post-reader-tag { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--steel); margin-bottom:20px; }
+.post-reader-title { font-family:'Playfair Display',Georgia,serif; font-size:clamp(32px,5vw,52px); font-weight:500; line-height:1.15; color:var(--dark); margin-bottom:24px; }
+.post-reader-meta { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--muted); margin-bottom:56px; padding-bottom:40px; border-bottom:1px solid var(--border); }
+.post-reader-body { font-family:'Playfair Display',Georgia,serif; font-size:20px; line-height:1.85; color:var(--body); }
+.post-reader-body h1,.post-reader-body h2,.post-reader-body h3 { font-family:'Playfair Display',Georgia,serif; color:var(--dark); margin:40px 0 16px; line-height:1.2; }
+.post-reader-body h1 { font-size:32px; }
+.post-reader-body h2 { font-size:26px; }
+.post-reader-body h3 { font-size:22px; }
+.post-reader-body p { margin-bottom:24px; }
+.post-reader-body blockquote { border-left:3px solid var(--blue); padding:16px 32px; margin:32px 0; font-style:italic; color:var(--steel); background:var(--blue-pale); }
+.post-reader-body strong { font-weight:700; color:var(--dark); }
+.post-reader-body em { font-style:italic; }
+.post-reader-body ul,.post-reader-body ol { padding-left:32px; margin-bottom:24px; }
+.post-reader-body li { margin-bottom:8px; }
+
+/* ════════════════════════════════════
+   LOGIN VIEW
+════════════════════════════════════ */
+#login-view { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--white); padding-top:60px; }
+.login-box { width:100%; max-width:400px; padding:60px 48px; border:1px solid var(--border); }
+.login-title { font-family:'Playfair Display',Georgia,serif; font-size:28px; font-style:italic; color:var(--dark); margin-bottom:8px; }
+.login-sub { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:40px; }
+.login-input { width:100%; padding:14px 16px; border:1px solid var(--border); background:var(--off); font-family:'IBM Plex Sans',sans-serif; font-size:15px; color:var(--dark); outline:none; margin-bottom:16px; transition:border-color 0.2s; }
+.login-input:focus { border-color:var(--blue); background:var(--white); }
+.login-btn { width:100%; padding:14px; background:var(--dark); color:white; border:none; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; }
+.login-btn:hover { background:var(--blue); }
+.login-error { margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--red); text-align:center; display:none; }
+
+/* ════════════════════════════════════
+   ADMIN VIEW
+════════════════════════════════════ */
+#admin-view { padding-top:60px; min-height:100vh; background:var(--off); }
+.admin-bar { background:var(--white); border-bottom:1px solid var(--border); padding:0 48px; height:52px; display:flex; align-items:center; justify-content:space-between; }
+.admin-tabs { display:flex; gap:32px; }
+.a-tab { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; padding:4px 0; transition:all 0.2s; }
+.a-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+.admin-actions { display:flex; gap:12px; align-items:center; }
+.a-btn { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; padding:8px 20px; border:1px solid var(--border); color:var(--muted); background:transparent; cursor:pointer; transition:all 0.2s; }
+.a-btn:hover { border-color:var(--dark); color:var(--dark); }
+.a-btn.primary { background:var(--blue); color:white; border-color:var(--blue); }
+.a-btn.primary:hover { background:var(--dark); border-color:var(--dark); }
+.a-btn.danger:hover { border-color:var(--red); color:var(--red); }
+
+.admin-content { max-width:900px; margin:0 auto; padding:48px; }
+
+/* Write form */
+.form-field { margin-bottom:20px; }
+.form-label { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; display:block; }
+.form-input { width:100%; padding:12px 16px; border:1px solid var(--border); background:var(--white); font-family:'IBM Plex Sans',sans-serif; font-size:15px; color:var(--dark); outline:none; transition:border-color 0.2s; }
+.form-input:focus { border-color:var(--blue); }
+.form-select { width:100%; padding:12px 16px; border:1px solid var(--border); background:var(--white); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; color:var(--dark); outline:none; cursor:pointer; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+/* Quill editor customization */
+.ql-container { font-family:'Playfair Display',Georgia,serif; font-size:18px; line-height:1.8; min-height:420px; background:var(--white); border:1px solid var(--border); border-top:none; }
+.ql-toolbar { background:var(--off); border:1px solid var(--border); border-radius:0; }
+.ql-editor { min-height:420px; padding:24px; color:var(--dark); }
+
+.publish-bar { display:flex; justify-content:space-between; align-items:center; padding:24px 0; border-top:1px solid var(--border); margin-top:24px; }
+.pub-status { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); }
+
+/* Posts list in admin */
+.admin-post-item { background:var(--white); border:1px solid var(--border); padding:20px 28px; display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; transition:background 0.2s; }
+.admin-post-item:hover { background:var(--blue-pale); }
+.admin-post-title { font-family:'Playfair Display',Georgia,serif; font-size:18px; font-style:italic; color:var(--dark); }
+.admin-post-meta { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--muted); margin-top:4px; }
+.admin-post-actions { display:flex; gap:10px; }
+.a-edit { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.15em; text-transform:uppercase; padding:6px 16px; border:1px solid var(--blue-light); color:var(--blue); background:transparent; cursor:pointer; transition:all 0.2s; }
+.a-edit:hover { background:var(--blue); color:white; }
+.a-delete { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.15em; text-transform:uppercase; padding:6px 16px; border:1px solid #fee2e2; color:var(--red); background:transparent; cursor:pointer; transition:all 0.2s; }
+.a-delete:hover { background:var(--red); color:white; }
+
+/* Reveal */
+.reveal { opacity:0; transform:translateY(20px); transition:opacity 0.7s ease,transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+@media(max-width:900px) {
+  nav { padding:0 24px; }
+  .nav-links { display:none; }
+  .hero { grid-template-columns:1fr; }
+  .hero-left { padding:80px 24px 48px; border-right:none; border-bottom:1px solid var(--border); }
+  .hero-right { padding:48px 24px 64px; }
+  .section-wrap { padding:72px 24px; }
+  .writing-grid { grid-template-columns:1fr; }
+  .writing-card.featured { grid-row:auto; }
+  .lang-grid { grid-template-columns:1fr; }
+  footer { flex-direction:column; gap:32px; }
+  .footer-right { text-align:left; }
+  .admin-content { padding:24px; }
+  .form-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" onclick="showView('main')">Mirage in Chaos</a>
+  <ul class="nav-links">
+    <li><a onclick="scrollToSection('inner')">Writing</a></li>
+    <li><a onclick="scrollToSection('projects')">Projects</a></li>
+    <li><a onclick="scrollToSection('research')">Research</a></li>
+    <li><a onclick="scrollToSection('language')">Language</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════
+     MAIN VIEW
+══════════════════════════════════ -->
+<div id="main-view" class="view active">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <h1 class="hero-name">Mirage<br>in <em>Chaos</em></h1>
+      <p class="hero-desc">
+        <strong>Building systems by day, questioning my own existence.</strong>
+        <strong>Writing through the space between who I was and who I'm becoming.</strong>
+        <span class="hero-who">Who am I?</span>
+      </p>
+    </div>
+    <div class="hero-right">
+      <div>
+        <p class="hero-ocean-label">Latest — The Deep Ocean</p>
+        <p class="hero-ocean-text">Complete silence, as if I'm drowning inside this silence. Like I'm in a deep ocean where everything became still. Yet chaos echoes inside my brain. And inside that ocean I find myself struggling to breathe — trying to adapt the fish skills so I survive. This deep ocean silence made me realize: I have to swim to see the sunrise.</p>
+        <p class="hero-ocean-quote">"Between life and death, there is a library."</p>
+        <p class="hero-quote-source">— Matt Haig, The Midnight Library</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: WRITING -->
+  <section id="inner" style="background:var(--white);">
+    <div class="section-wrap">
+      <div class="section-header reveal">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Inner World — <em>Thoughts & Philosophy</em></h2>
+      </div>
+
+      <div class="writing-grid reveal">
+        <div class="writing-card featured" onclick="openPost('deep-ocean')">
+          <div class="card-tag">Deep Thoughts &nbsp;·&nbsp; Personal</div>
+          <div class="card-title">The Deep Ocean</div>
+          <div class="card-excerpt">It was a normal day as usual. My thoughts were loud enough to hear. Deep loneliness, the wanting to achieve my goals. A song playing — "Just Wanna Be Yours." Strange peace and chaos inside me at once.</div>
+          <span class="card-read">Read entry →</span>
+        </div>
+        <div class="writing-card" onclick="openPost('midnight-library')">
+          <div class="card-tag">Books &nbsp;·&nbsp; My Take</div>
+          <div class="card-title">The Midnight Library — My View</div>
+          <div class="card-excerpt">Every unlived life is a door. My honest takes, what stayed with me, what I disagreed with.</div>
+        </div>
+        <div class="writing-card" onclick="openPost('atomic-habits')">
+          <div class="card-tag">Books &nbsp;·&nbsp; My Take</div>
+          <div class="card-title">Atomic Habits — What Actually Stuck</div>
+          <div class="card-excerpt">James Clear says you don't rise to the level of your goals. Here's what I tested on myself.</div>
+        </div>
+      </div>
+
+      <!-- Dynamic posts from admin -->
+      <div id="dynamic-posts"></div>
+
+      <div class="tags-row reveal">
+        <span class="tag">Philosophy</span>
+        <span class="tag">Psychology</span>
+        <span class="tag">Neuroscience</span>
+        <span class="tag">Books</span>
+        <span class="tag">Poetry</span>
+        <span class="tag">Dreams</span>
+        <span class="tag">Weekly Life</span>
+        <span class="tag">Deep Thoughts</span>
+        <span class="tag">Existence</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: PROJECTS -->
+  <section id="projects" style="background:var(--off);">
+    <div class="section-wrap">
+      <div class="section-header reveal">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Projects — <em>What I Build</em></h2>
+      </div>
+      <div class="coming-soon-box reveal">
+        <div class="coming-soon-icon">{ }</div>
+        <div class="coming-soon-label">Coming Soon</div>
+        <p class="coming-soon-desc">Projects I am building — tools, systems and experiments. This space grows as the work does.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: RESEARCH -->
+  <section id="research" style="background:var(--white);">
+    <div class="section-wrap">
+      <div class="section-header reveal">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Research — <em>Papers & Ideas</em></h2>
+      </div>
+      <div class="coming-soon-box reveal">
+        <div class="coming-soon-icon">✦</div>
+        <div class="coming-soon-label">Coming Soon</div>
+        <p class="coming-soon-desc">Research papers, overviews and the ideas currently living in my head.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: LANGUAGE -->
+  <section id="language" style="background:var(--off);">
+    <div class="section-wrap">
+      <div class="section-header reveal">
+        <span class="section-num">04</span>
+        <h2 class="section-title">66 Days — <em>A Space to Learn Together</em></h2>
+      </div>
+      <p style="font-family:'Playfair Display',Georgia,serif;font-size:19px;font-style:italic;line-height:1.75;color:var(--body);margin-bottom:48px;max-width:640px;" class="reveal">
+        It takes 66 days to form a habit. I'm testing it on myself. Every cycle I pick one thing to learn, practice, and write about. Follow along, suggest what comes next, or start your own 66.
+      </p>
+      <div class="lang-grid reveal">
+        <div class="lang-card">
+          <div class="lang-char">中文</div>
+          <div class="lang-name">Mandarin Chinese</div>
+          <div class="lang-desc">Learning from living — weekly words, patterns and observations that textbooks never mention.</div>
+        </div>
+        <div class="lang-card">
+          <div class="lang-char" style="font-style:italic;">It</div>
+          <div class="lang-name">Italian</div>
+          <div class="lang-desc">A language that sounds like music. Learning to think in rhythm and beauty.</div>
+        </div>
+        <div class="lang-card">
+          <div class="lang-char">En</div>
+          <div class="lang-name">English</div>
+          <div class="lang-desc">Writing in the space between languages. Finding a voice that is entirely my own.</div>
+        </div>
+      </div>
+
+      <!-- Giscus comments -->
+      <div style="background:var(--blue-pale);border:1px solid var(--blue-light);padding:48px;" class="reveal">
+        <div style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-style:italic;color:var(--dark);margin-bottom:8px;">What should the next 66 days be about?</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;color:var(--muted);margin-bottom:32px;">Leave a suggestion — sign in with GitHub to comment.</div>
+        <script src="https://giscus.app/client.js"
+          data-repo="Bindu99/mirage-in-chaos"
+          data-repo-id="R_kgDOSSOq3w"
+          data-category="General"
+          data-category-id="DIC_kwDOSSOq384C8K41"
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="bottom"
+          data-theme="preferred_color_scheme"
+          data-lang="en"
+          crossorigin="anonymous"
+          async>
+        </script>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <div class="footer-brand">Mirage in Chaos</div>
+      <div class="footer-by">2025</div>
+    </div>
+    <div class="footer-right">
+      <p>Building systems by day</p>
+      <p>Questioning existence by night</p>
+      <span class="footer-who">Who am I?</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     POST READER VIEW
+══════════════════════════════════ -->
+<div id="post-view" class="view">
+  <div class="post-reader">
+    <button class="post-back" onclick="showView('main')">← Back to writing</button>
+    <div class="post-reader-tag" id="reader-tag"></div>
+    <h1 class="post-reader-title" id="reader-title"></h1>
+    <div class="post-reader-meta" id="reader-meta"></div>
+    <div class="post-reader-body" id="reader-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     LOGIN VIEW
+══════════════════════════════════ -->
+<div id="login-view" class="view">
+  <div class="login-box">
+    <div class="login-title">Writer's Panel</div>
+    <div class="login-sub">Mirage in Chaos — Admin</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Enter →</button>
+    <div class="login-error" id="login-error">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ADMIN VIEW
+══════════════════════════════════ -->
+<div id="admin-view" class="view">
+  <div class="admin-bar">
+    <div class="admin-tabs">
+      <button class="a-tab active" onclick="adminTab('write',this)">✦ Write</button>
+      <button class="a-tab" onclick="adminTab('posts',this)">All Posts</button>
+    </div>
+    <div class="admin-actions">
+      <button class="a-btn" onclick="showView('main')">← View Site</button>
+      <button class="a-btn danger" onclick="doLogout()">Log out</button>
+    </div>
+  </div>
+
+  <!-- WRITE TAB -->
+  <div id="admin-write" class="admin-content">
+    <div class="form-field">
+      <label class="form-label">Post Title *</label>
+      <input class="form-input" type="text" id="f-title" placeholder="What is this post about?">
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="f-category">
+          <option>Deep Thoughts</option>
+          <option>Philosophy</option>
+          <option>Psychology</option>
+          <option>Books</option>
+          <option>Poetry</option>
+          <option>Dreams</option>
+          <option>Neuroscience</option>
+          <option>Weekly Life</option>
+          <option>66 Days</option>
+          <option>Language</option>
+          <option>Existence</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="f-date">
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Write your post *</label>
+      <div id="quill-editor"></div>
+    </div>
+    <div class="publish-bar">
+      <button class="a-btn" onclick="saveDraft()">Save Draft</button>
+      <span class="pub-status" id="pub-status"></span>
+      <button class="a-btn primary" onclick="publishPost()">Publish →</button>
+    </div>
+  </div>
+
+  <!-- POSTS TAB -->
+  <div id="admin-posts" class="admin-content" style="display:none;">
+    <div id="admin-posts-list"></div>
+  </div>
+</div>
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+<script>
+// ── PASSWORD ──
+const ADMIN_PASSWORD = "mirageinchaos2025";
+
+// ── STATIC POSTS (always shown) ──
+const staticPosts = {
+  'deep-ocean': {
+    id: 'deep-ocean',
+    title: 'The Deep Ocean',
+    category: 'Deep Thoughts · Personal',
+    date: '2025-05-02',
+    body: `<p>It was a normal day as usual. My thoughts were loud enough to hear. Deep loneliness with the wanting to achieve my goals. And I'm realizing that I'm a new person, with a different perspective and approach towards life.</p>
+    <p>A song playing — <em>"Just Wanna Be Yours."</em> Complete silence, as if I'm drowning inside this silence. Like I'm in a deep ocean where everything became still. Yet chaos echoes inside my brain — fear, rejection, betrayal.</p>
+    <p>In that inside of the ocean I find myself struggling to survive and breathe — trying to adapt the fish skills so I survive. Yet waiting for somebody to pull me up. But this deep ocean silence made me realize: <strong>I have to swim to see the sunrise.</strong></p>
+    <p>Strange peace and chaos inside me. The urge to write and put it in words. How weird to understand that we are aware that we come alone, leave alone — yet we try to be with someone or search a place where we can call home and belonging.</p>
+    <blockquote>"Between life and death, there is a library." — Matt Haig, The Midnight Library</blockquote>`
+  },
+  'midnight-library': {
+    id: 'midnight-library',
+    title: 'The Midnight Library — My View',
+    category: 'Books · My Take',
+    date: '2025-05-02',
+    body: `<p>This post is coming soon. I haven't finished the book yet — but when I do, I'll write everything that stayed with me, what I disagreed with, and what it made me feel about my own unlived lives.</p>
+    <blockquote>"Between life and death, there is a library." — Matt Haig</blockquote>`
+  },
+  'atomic-habits': {
+    id: 'atomic-habits',
+    title: 'Atomic Habits — What Actually Stuck',
+    category: 'Books · My Take',
+    date: '2025-05-02',
+    body: `<p>James Clear says you don't rise to the level of your goals — you fall to the level of your systems. This post is coming soon. I'll write what I actually tested on myself, what worked, and what I think is missing from the book.</p>`
+  }
+};
+
+// ── VIEW SYSTEM ──
+function showView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(view + '-view').classList.add('active');
+  window.scrollTo(0, 0);
+  if (view === 'main') loadDynamicPosts();
+}
+
+function scrollToSection(id) {
+  showView('main');
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// ── POST READER ──
+function openPost(id) {
+  const post = staticPosts[id] || getPosts().find(p => p.id === id);
+  if (!post) return;
+  document.getElementById('reader-tag').textContent = post.category;
+  document.getElementById('reader-title').textContent = post.title;
+  document.getElementById('reader-meta').textContent = formatDate(post.date);
+  document.getElementById('reader-body').innerHTML = post.body;
+  showView('post');
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+}
+
+// ── LOGIN ──
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('mic-admin', '1');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('login-error').style.display = 'none';
+    showView('admin');
+    initQuill();
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('mic-admin');
+  showView('main');
+}
+
+// Admin link — type /admin in URL hash to go to login
+window.addEventListener('hashchange', checkHash);
+function checkHash() {
+  if (window.location.hash === '#admin') {
+    if (sessionStorage.getItem('mic-admin') === '1') {
+      showView('admin');
+      initQuill();
+    } else {
+      showView('login');
+    }
+  }
+}
+checkHash();
+
+// ── QUILL RICH TEXT EDITOR ──
+let quill = null;
+function initQuill() {
+  if (quill) return;
+  quill = new Quill('#quill-editor', {
+    theme: 'snow',
+    modules: {
+      toolbar: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'indent': '-1' }, { 'indent': '+1' }],
+        [{ 'align': [] }],
+        ['link'],
+        ['clean']
+      ]
+    },
+    placeholder: 'Start writing here... This is your space. Write exactly as you think.'
+  });
+}
+
+// ── ADMIN TABS ──
+function adminTab(tab, btn) {
+  document.querySelectorAll('.a-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('admin-write').style.display = tab === 'write' ? 'block' : 'none';
+  document.getElementById('admin-posts').style.display = tab === 'posts' ? 'block' : 'none';
+  if (tab === 'posts') renderAdminPosts();
+}
+
+// ── POSTS STORAGE ──
+function getPosts() { return JSON.parse(localStorage.getItem('mic-posts') || '[]'); }
+function savePosts(p) { localStorage.setItem('mic-posts', JSON.stringify(p)); }
+
+function publishPost() {
+  const title = document.getElementById('f-title').value.trim();
+  const body = quill ? quill.root.innerHTML : '';
+  const category = document.getElementById('f-category').value;
+  const date = document.getElementById('f-date').value;
+  if (!title || !body || body === '<p><br></p>') { setStatus('Add a title and write something first.'); return; }
+
+  const posts = getPosts();
+  const editId = document.getElementById('admin-write').dataset.editId;
+
+  if (editId) {
+    const idx = posts.findIndex(p => p.id === editId);
+    if (idx > -1) posts[idx] = { ...posts[idx], title, body, category, date };
+    delete document.getElementById('admin-write').dataset.editId;
+  } else {
+    posts.unshift({ id: Date.now().toString(), title, body, category, date });
+  }
+
+  savePosts(posts);
+  clearForm();
+  setStatus('Published ✓ — visible on your site now');
+  setTimeout(() => setStatus(''), 4000);
+  loadDynamicPosts();
+}
+
+function saveDraft() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { setStatus('Add a title first.'); return; }
+  setStatus('Draft saved ✓');
+  setTimeout(() => setStatus(''), 3000);
+}
+
+function clearForm() {
+  document.getElementById('f-title').value = '';
+  if (quill) quill.setContents([]);
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+}
+
+function setStatus(msg) { document.getElementById('pub-status').textContent = msg; }
+
+function renderAdminPosts() {
+  const posts = getPosts();
+  const el = document.getElementById('admin-posts-list');
+  if (!posts.length) {
+    el.innerHTML = `<div style="padding:80px;text-align:center;border:1px dashed var(--border);background:var(--white);"><p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">No posts yet — write your first one</p></div>`;
+    return;
+  }
+  el.innerHTML = posts.map(p => `
+    <div class="admin-post-item">
+      <div>
+        <div class="admin-post-title">${p.title}</div>
+        <div class="admin-post-meta">${p.category} &nbsp;·&nbsp; ${formatDate(p.date)}</div>
+      </div>
+      <div class="admin-post-actions">
+        <button class="a-edit" onclick="editPost('${p.id}')">Edit</button>
+        <button class="a-delete" onclick="deletePost('${p.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function editPost(id) {
+  const post = getPosts().find(p => p.id === id);
+  if (!post) return;
+  document.getElementById('f-title').value = post.title;
+  document.getElementById('f-category').value = post.category;
+  document.getElementById('f-date').value = post.date;
+  if (quill) quill.root.innerHTML = post.body;
+  document.getElementById('admin-write').dataset.editId = id;
+  adminTab('write', document.querySelectorAll('.a-tab')[0]);
+}
+
+function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  savePosts(getPosts().filter(p => p.id !== id));
+  renderAdminPosts();
+  loadDynamicPosts();
+}
+
+// ── LOAD DYNAMIC POSTS ON MAIN PAGE ──
+function loadDynamicPosts() {
+  const posts = getPosts();
+  const container = document.getElementById('dynamic-posts');
+  if (!posts.length) { container.innerHTML = ''; return; }
+  container.innerHTML = posts.map(p => `
+    <div class="dynamic-card" onclick="openPost('${p.id}')">
+      <div class="card-tag">${p.category}</div>
+      <div class="card-title" style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:500;font-style:italic;color:var(--dark);margin-bottom:12px;">${p.title}</div>
+      <div class="card-excerpt" style="font-size:15px;color:var(--muted);line-height:1.75;">${p.body.replace(/<[^>]+>/g,'').substring(0,140)}...</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-top:16px;">Read →</div>
+    </div>`).join('');
+}
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+reveals.forEach(el => observer.observe(el));
+
+// Load dynamic posts on start
+loadDynamicPosts();
+</script>
+</body>
+</html>
