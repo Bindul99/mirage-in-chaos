@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirage in Chaos — Bindu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@300;400&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --white:      #ffffff;
+  --off:        #f7f8fa;
+  --soft:       #eef1f6;
+  --border:     #e2e6ee;
+  --muted:      #8892a4;
+  --body:       #2d3340;
+  --dark:       #111827;
+  --blue:       #2d4a7a;
+  --blue-mid:   #3d5f96;
+  --blue-light: #dce5f4;
+  --blue-pale:  #f0f4fb;
+  --steel:      #5b7499;
+  --accent:     #3d5f96;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--white);
+  color: #191919;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 17px;
+  font-style: italic;
+  color: var(--dark);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--blue); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 60px;
+  background: var(--white);
+}
+
+.hero-left {
+  padding: 100px 60px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+}
+
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--steel);
+}
+
+.hero-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 500;
+  line-height: 1.05;
+  color: #191919;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+}
+
+.hero-name em {
+  font-style: italic;
+  color: var(--blue);
+}
+
+.hero-by {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 48px;
+}
+
+.hero-desc {
+  font-size: 20px;
+  line-height: 1.7;
+  color: #191919;
+  max-width: 440px;
+  border-left: 2px solid var(--blue-light);
+  padding-left: 24px;
+  font-weight: 400;
+}
+
+.hero-who {
+  display: block;
+  margin-top: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: var(--steel);
+  text-transform: uppercase;
+}
+
+/* Hero right — light */
+.hero-right {
+  background: var(--white);
+  padding: 100px 60px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--border);
+}
+
+.hero-ocean-quote {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 20px;
+  color: #191919;
+  margin-top: 36px;
+  line-height: 1.6;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.hero-quote-source {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-top: 12px;
+}
+
+.hero-ocean {
+  padding-top: 0;
+}
+
+.hero-ocean-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 24px;
+}
+
+.hero-ocean-text {
+  font-size: 19px;
+  line-height: 1.85;
+  color: #191919;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 400;
+}
+
+/* ── SHARED ── */
+.section-wrap { padding: 100px 60px; }
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 64px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(26px, 3.5vw, 42px);
+  font-weight: 500;
+  color: #191919;
+  letter-spacing: -0.01em;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--blue);
+}
+
+/* ── SECTION 1: WRITING ── */
+#inner { background: var(--white); }
+
+.writing-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.writing-card {
+  background: var(--white);
+  padding: 40px;
+  transition: background 0.25s ease;
+  cursor: default;
+}
+
+.writing-card:hover { background: var(--blue-pale); }
+
+.writing-card.featured {
+  grid-row: 1 / 3;
+  background: var(--blue-pale);
+  padding: 52px;
+  border-left: 3px solid var(--blue);
+}
+
+.writing-card.featured:hover { background: #e6edf8; }
+
+.card-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.3;
+  color: #191919;
+  margin-bottom: 14px;
+}
+
+.writing-card.featured .card-title {
+  font-size: 30px;
+  color: #191919;
+  margin-bottom: 20px;
+}
+
+.card-excerpt {
+  font-size: 16px;
+  color: #3d3d3d;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+.writing-card.featured .card-excerpt {
+  font-size: 17px;
+  color: #191919;
+  line-height: 1.85;
+}
+
+.card-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--steel);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.card-read:hover { color: var(--blue); }
+
+.card-read::after {
+  content: '→';
+  transition: transform 0.2s;
+}
+
+.card-read:hover::after { transform: translateX(4px); }
+
+/* Tags */
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: default;
+  transition: all 0.2s;
+  border-radius: 2px;
+}
+
+.tag:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-pale);
+}
+
+/* ── COMING SOON SECTIONS ── */
+.coming-soon-box {
+  border: 1px dashed var(--border);
+  background: var(--off);
+  padding: 80px 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.coming-soon-icon {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 40px;
+  font-style: italic;
+  color: var(--blue-light);
+  margin-bottom: 8px;
+}
+
+.coming-soon-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.coming-soon-desc {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 400px;
+  line-height: 1.7;
+  font-style: italic;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--off);
+  border-top: 1px solid var(--border);
+  padding: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.footer-brand {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-style: italic;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+
+.footer-by {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.footer-right {
+  text-align: right;
+}
+
+.footer-right p {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  line-height: 2;
+}
+
+.footer-who {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--steel);
+  margin-top: 8px;
+  display: block;
+}
+
+/* ── REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-left { padding: 80px 24px 48px; border-right: none; border-bottom: 1px solid var(--border); }
+  .hero-right { padding: 48px 24px 64px; border-left: none; }
+  .section-wrap { padding: 72px 24px; }
+  .writing-grid { grid-template-columns: 1fr; }
+  .writing-card.featured { grid-row: auto; }
+  footer { flex-direction: column; gap: 32px; }
+  .footer-right { text-align: left; }
+  .coming-soon-box { padding: 60px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Mirage in Chaos</a>
+  <ul class="nav-links">
+    <li><a href="#inner">Writing</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#language">Language</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <h1 class="hero-name">Mirage<br>in <em>Chaos</em></h1>
+    <p class="hero-desc">
+      <strong>Building systems by day, questioning my own existence.</strong>
+      <strong>Writing through the space between who I was and who I'm becoming.</strong>
+      <span class="hero-who">Who am I?</span>
+    </p>
+
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-ocean">
+      <p class="hero-ocean-label">Latest — The Deep Ocean</p>
+      <p class="hero-ocean-text">
+        Complete silence, as if I'm drowning inside this silence. Like I'm in a deep ocean where everything became still. Yet chaos echoes inside my brain. And inside that ocean I find myself struggling to breathe — trying to adapt the fish skills so I survive. This deep ocean silence made me realize: I have to swim to see the sunrise.
+      </p>
+      <p class="hero-ocean-quote"><em><strong>"Between life and death, there is a library."</strong></em></p>
+      <p class="hero-quote-source">— Matt Haig, The Midnight Library</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1: WRITING -->
+<section id="inner">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Inner World — <em>Thoughts & Philosophy</em></h2>
+    </div>
+
+    <div class="writing-grid reveal">
+      <div class="writing-card featured">
+        <div class="card-tag">Deep Thoughts &nbsp;·&nbsp; Personal</div>
+        <div class="card-title">The Deep Ocean</div>
+        <div class="card-excerpt">
+          It was a normal day as usual. My thoughts were loud enough to hear. Deep loneliness, the wanting to achieve my goals. A song playing — "Just Wanna Be Yours." Strange peace and chaos inside me at once. How weird — we know we come alone, leave alone, yet we spend our lives searching for someone, or some place we can call home.
+        </div>
+        <a href="#" class="card-read">Read entry</a>
+      </div>
+
+      <div class="writing-card">
+        <div class="card-tag">Books &nbsp;·&nbsp; My Take</div>
+        <div class="card-title">The Midnight Library — My View</div>
+        <div class="card-excerpt">Every unlived life is a door. Matt Haig didn't write a novel — he wrote a question back to the reader: what would you change? My honest takes, what stayed with me, what I disagreed with.</div>
+        <a href="#" class="card-read">Read entry</a>
+      </div>
+
+      <div class="writing-card">
+        <div class="card-tag">Books &nbsp;·&nbsp; My Take</div>
+        <div class="card-title">Atomic Habits — What Actually Stuck</div>
+        <div class="card-excerpt">James Clear says you don't rise to the level of your goals, you fall to the level of your systems. Here's what I took from it, what I tested on myself, and what I think is missing.</div>
+        <a href="#" class="card-read">Read entry</a>
+      </div>
+    </div>
+
+    <div class="tags-row reveal">
+      <span class="tag">Philosophy</span>
+      <span class="tag">Psychology</span>
+      <span class="tag">Neuroscience</span>
+      <span class="tag">Books</span>
+      <span class="tag">Poetry</span>
+      <span class="tag">Dreams</span>
+      <span class="tag">Weekly Life</span>
+      <span class="tag">Deep Thoughts</span>
+      <span class="tag">Existence</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: PROJECTS -->
+<section id="projects" style="background: var(--off);">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Projects — <em>What I Build</em></h2>
+    </div>
+    <div class="coming-soon-box reveal">
+      <div class="coming-soon-icon">{ }</div>
+      <div class="coming-soon-label">Coming Soon</div>
+      <p class="coming-soon-desc">Projects I am building — tools, systems and experiments. This space grows as the work does.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: RESEARCH -->
+<section id="research" style="background: var(--white);">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Research — <em>Papers & Ideas</em></h2>
+    </div>
+    <div class="coming-soon-box reveal">
+      <div class="coming-soon-icon">✦</div>
+      <div class="coming-soon-label">Coming Soon</div>
+      <p class="coming-soon-desc">Research papers, overviews and the ideas currently living in my head. Work in progress — like any honest inquiry.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: LANGUAGE + 66 DAYS -->
+<section id="language" style="background: var(--off);">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">04</span>
+      <h2 class="section-title">66 Days — <em>A Space to Learn Together</em></h2>
+    </div>
+
+    <!-- Intro -->
+    <div class="reveal" style="max-width:640px; margin-bottom:56px;">
+      <p style="font-family:'Playfair Display',Georgia,serif; font-size:19px; font-style:italic; line-height:1.75; color:var(--body); margin-bottom:20px;">
+        It takes 66 days to form a habit — not 21, not 30. Science says so. I'm testing it on myself. Every cycle I pick one thing to learn, practice, and write about. You can follow along, suggest what comes next, or start your own 66.
+      </p>
+      <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--steel);">Current cycle — Languages & Mind</p>
+    </div>
+
+    <!-- Language cards -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:48px;" class="reveal">
+      <div style="background:var(--white); padding:36px 32px;">
+        <div style="font-family:'Playfair Display',Georgia,serif; font-size:44px; color:var(--blue-light); margin-bottom:14px; line-height:1;">中文</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Mandarin Chinese</div>
+        <p style="font-size:14px; color:var(--muted); line-height:1.75;">Learning from living — weekly words, patterns and observations that textbooks never mention.</p>
+      </div>
+      <div style="background:var(--white); padding:36px 32px;">
+        <div style="font-family:'Playfair Display',Georgia,serif; font-size:44px; font-style:italic; color:var(--blue-light); margin-bottom:14px; line-height:1;">It</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Italian</div>
+        <p style="font-size:14px; color:var(--muted); line-height:1.75;">A language that sounds like music. Learning to think in rhythm and beauty.</p>
+      </div>
+      <div style="background:var(--white); padding:36px 32px;">
+        <div style="font-family:'Playfair Display',Georgia,serif; font-size:44px; color:var(--blue-light); margin-bottom:14px; line-height:1;">En</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">English</div>
+        <p style="font-size:14px; color:var(--muted); line-height:1.75;">Writing in the space between languages. Finding a voice that is entirely my own.</p>
+      </div>
+    </div>
+
+    <!-- 66 days tracker -->
+    <div class="reveal" style="background:var(--white); border:1px solid var(--border); padding:48px; margin-bottom:2px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:24px; margin-bottom:36px;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--steel); margin-bottom:10px;">Current cycle · Day <span id="current-day">1</span> of 66</div>
+          <div style="font-family:'Playfair Display',Georgia,serif; font-size:26px; color:var(--dark);">What can a human learn in 66 days?</div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted);">
+          <span id="days-left">66</span> days remaining
+        </div>
+      </div>
+
+      <!-- Progress dots -->
+      <div id="day-dots" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:36px;"></div>
+
+      <!-- Day log -->
+      <div style="border-top:1px solid var(--border); padding-top:32px;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:20px;">Day Log</div>
+        <div id="day-log" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+    </div>
+
+    <!-- Giscus Comments -->
+    <div class="reveal" style="background:var(--blue-pale); border:1px solid var(--blue-light); padding:48px;">
+      <div style="font-family:'Playfair Display',Georgia,serif; font-size:22px; font-style:italic; color:var(--dark); margin-bottom:8px;">What should the next 66 days be about?</div>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; color:var(--muted); margin-bottom:32px;">Leave a suggestion, a thought, a word in any language. Sign in with GitHub to comment. This space is ours.</div>
+      <script src="https://giscus.app/client.js"
+        data-repo="Bindu99/mirage-in-chaos"
+        data-repo-id="R_kgDOSSOq3w"
+        data-category="General"
+        data-category-id="DIC_kwDOSSOq384C8K41"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">Mirage in Chaos</div>
+    <div class="footer-by">2025</div>
+  </div>
+  <div class="footer-right">
+    <p>Building systems by day</p>
+    <p>Questioning existence by night</p>
+    <span class="footer-who">Who am I?</span>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => observer.observe(el));
+
+  // 66 days tracker
+  const startDate = new Date('2025-01-01');
+  const today = new Date();
+  const diffMs = today - startDate;
+  const diffDays = Math.min(Math.max(Math.floor(diffMs / (1000*60*60*24)), 1), 66);
+  const daysLeft = Math.max(66 - diffDays, 0);
+
+  document.getElementById('current-day').textContent = diffDays;
+  document.getElementById('days-left').textContent = daysLeft;
+
+  // Render dots
+  const dotsEl = document.getElementById('day-dots');
+  for (let i = 1; i <= 66; i++) {
+    const dot = document.createElement('div');
+    dot.title = 'Day ' + i;
+    dot.style.cssText = `width:10px;height:10px;border-radius:50%;cursor:default;transition:transform 0.2s;`;
+    if (i < diffDays) dot.style.background = 'var(--blue)';
+    else if (i === diffDays) { dot.style.background = 'var(--blue-mid)'; dot.style.transform = 'scale(1.4)'; dot.style.boxShadow = '0 0 0 2px var(--blue-light)'; }
+    else dot.style.background = 'var(--border)';
+    dotsEl.appendChild(dot);
+  }
+
+  // Day log entries
+  const logs = [
+    { day: 1, note: 'Started. The first day is always about deciding to begin — not about doing it perfectly.' },
+    { day: 7, note: 'One week in. Already noticing how the mind resists unfamiliar sounds. In Italian, everything ends in a vowel. In Mandarin, tone is everything.' },
+    { day: 14, note: 'Two weeks. The habit is forming. I wake up and it is the first thing I think about.' },
+  ];
+
+  const logEl = document.getElementById('day-log');
+  logs.filter(l => l.day <= diffDays).reverse().forEach(entry => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:20px 24px; border-left:2px solid var(--blue-light); background:var(--off);';
+    div.innerHTML = `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--steel);margin-bottom:8px;">Day ${entry.day}</div><p style="font-size:14px;color:var(--body);line-height:1.75;font-style:italic;font-family:'Playfair Display',Georgia,serif;">${entry.note}</p>`;
+    logEl.appendChild(div);
+  });
+
+  // Comments handled by Giscus
+</script>
+</body>
+</html>
