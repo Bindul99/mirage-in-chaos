@@ -8,7 +8,7 @@ export default async (req) => {
     const posts = await Promise.all(
       blobs.map(async ({ key }) => await store.get(key, { type: "json" }))
     );
-    const sorted = posts.filter(Boolean).sort((a,b) => new Date(b.date) - new Date(a.date));
+    const sorted = posts.filter(Boolean).sort((a, b) => new Date(b.date) - new Date(a.date));
     return Response.json(sorted);
   }
 
