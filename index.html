@@ -88,9 +88,9 @@ nav {
 .card-read:hover { color:var(--blue); }
 
 /* Dynamic posts grid */
-#dynamic-posts { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); margin-top:2px; }
+#dynamic-posts { display:flex; flex-direction:column; gap:1px; margin-top:2px; }
 #dynamic-posts:empty { display:none; }
-.dynamic-card { background:var(--white); padding:40px; cursor:pointer; transition:background 0.2s; }
+.dynamic-card { background:var(--white); padding:40px; cursor:pointer; transition:background 0.2s; border:1px solid var(--border); margin-bottom:1px; }
 .dynamic-card:hover { background:var(--blue-pale); }
 
 /* Tags */
@@ -729,9 +729,7 @@ async function loadDynamicPosts() {
         <div style="font-size:15px;color:var(--muted);line-height:1.8;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;">${p.body.replace(/<[^>]+>/g,'').substring(0,200)}</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-top:16px;">Read →</div>
       </div>`).join('') : '';
-  }
-
-  // Language posts
+  }  // Language posts
   const langPosts = posts.filter(p => LANGUAGE_CATEGORIES.includes(p.category));
   const langContainer = document.getElementById('dynamic-language-posts');
   if (!langContainer) return;
